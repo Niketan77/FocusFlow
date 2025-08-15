@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusFlow - Simple Todo App</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="app-title">FocusFlow</h1>
+                <div class="header-controls">
+                    <button class="btn btn-secondary" id="focusModeBtn">
+                        <span class="icon">🎯</span>
+                        Focus Mode
+                    </button>
+                    <button class="btn btn-secondary" id="themeToggle">
+                        <span class="icon">🌙</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3>Views</h3>
+                    <ul class="nav-list">
+                        <li><button class="nav-item active" data-view="today">
+                            <span class="icon">📅</span>
+                            Today
+                            <span class="count" id="todayCount">0</span>
+                        </button></li>
+                        <li><button class="nav-item" data-view="upcoming">
+                            <span class="icon">📋</span>
+                            Upcoming
+                            <span class="count" id="upcomingCount">0</span>
+                        </button></li>
+                        <li><button class="nav-item" data-view="completed">
+                            <span class="icon">✅</span>
+                            Completed
+                            <span class="count" id="completedCount">0</span>
+                        </button></li>
+                    </ul>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="section-header">
+                        <h3>Projects</h3>
+                        <button class="btn btn-icon" id="addProjectBtn">+</button>
+                    </div>
+                    <ul class="nav-list" id="projectsList">
+                        <!-- Dynamic project list -->
+                    </ul>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3>Tags</h3>
+                    <div class="tags-container" id="tagsContainer">
+                        <!-- Dynamic tags -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Task Area -->
+            <section class="task-area">
+                <div class="task-header">
+                    <h2 id="viewTitle">Today</h2>
+                    <div class="task-controls">
+                        <div class="search-container">
+                            <input type="text" placeholder="Search tasks..." class="search-input" id="searchInput">
+                            <span class="search-icon">🔍</span>
+                        </div>
+                        <div class="filter-dropdown">
+                            <button class="btn btn-secondary" id="filterBtn">
+                                <span class="icon">⚙️</span>
+                                Filter
+                            </button>
+                            <div class="dropdown-content" id="filterDropdown">
+                                <label><input type="checkbox" value="high"> High Priority</label>
+                                <label><input type="checkbox" value="medium"> Medium Priority</label>
+                                <label><input type="checkbox" value="low"> Low Priority</label>
+                                <hr>
+                                <label><input type="checkbox" value="overdue"> Overdue</label>
+                                <label><input type="checkbox" value="today"> Due Today</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Add -->
+                <div class="quick-add">
+                    <div class="quick-add-input">
+                        <input type="text" placeholder="Add a task... (try 'Meeting with John tomorrow at 3pm')" 
+                               class="task-input" id="quickAddInput">
+                        <button class="btn btn-primary" id="addTaskBtn">Add</button>
+                    </div>
+                    <div class="quick-add-options" id="quickAddOptions" style="display: none;">
+                        <div class="option-group">
+                            <label>Project:</label>
+                            <select id="taskProject">
+                                <option value="">No Project</option>
+                            </select>
+                        </div>
+                        <div class="option-group">
+                            <label>Priority:</label>
+                            <select id="taskPriority">
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                        <div class="option-group">
+                            <label>Due Date:</label>
+                            <input type="datetime-local" id="taskDueDate">
+                        </div>
+                        <div class="option-group">
+                            <label>Tags:</label>
+                            <input type="text" placeholder="work, personal, urgent" id="taskTags">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Task List -->
+                <div class="task-list" id="taskList">
+                    <!-- Dynamic task items -->
+                </div>
+
+                <!-- Empty State -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-icon">📝</div>
+                    <h3>No tasks yet</h3>
+                    <p>Add your first task above to get started!</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="modalOverlay" style="display: none;">
+        <div class="modal" id="taskModal">
+            <div class="modal-header">
+                <h3 id="modalTitle">Edit Task</h3>
+                <button class="btn btn-icon" id="closeModal">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Task Name</label>
+                    <input type="text" id="editTaskName" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="editTaskDescription" class="form-input" rows="3"></textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Project</label>
+                        <select id="editTaskProject" class="form-input">
+                            <option value="">No Project</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Priority</label>
+                        <select id="editTaskPriority" class="form-input">
+                            <option value="low">Low</option>
+                            <option value="medium">Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Due Date</label>
+                    <input type="datetime-local" id="editTaskDueDate" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label>Tags</label>
+                    <input type="text" id="editTaskTags" class="form-input" placeholder="work, personal, urgent">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="editTaskRecurring">
+                        Recurring Task
+                    </label>
+                    <select id="editTaskRecurrence" class="form-input" style="display: none;">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="monthly">Monthly</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelEdit">Cancel</button>
+                <button class="btn btn-danger" id="deleteTask">Delete</button>
+                <button class="btn btn-primary" id="saveTask">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div class="toast" id="toast" style="display: none;">
+        <span id="toastMessage"></span>
+        <button class="toast-close" id="toastClose">×</button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/utils.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/nlp.js"></script>
+    <script src="js/tasks.js"></script>
+    <script src="js/projects.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
